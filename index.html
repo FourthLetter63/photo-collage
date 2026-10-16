@@ -32,9 +32,9 @@ button:disabled,input:disabled,select:disabled{opacity:.45;cursor:not-allowed}.f
 </head>
 <body>
 <h1>3:4 拼贴</h1>
-<p>固定 3:4 · 2–9 框预设布局 · 图片 / 文字混排 · Mac / iPhone / iPad · 本地处理</p>
+<p>固定 3:4 · 2–9 框预设布局 · 图片 / 文字混排 · Mac / iPhone / iPad · 照片仅在本机处理</p>
 
-<div class="preview-wrap"><canvas id="preview" class="preview" width="900" height="1200" aria-label="可拖动的拼贴预览"></canvas></div><div id="adjustBar" class="adjust-bar hidden"><span id="adjustLabel">正在调整构图</span><button id="finishAdjust" type="button">完成调整</button></div>
+<div class="preview-wrap"><canvas id="preview" class="preview" width="900" height="1200" aria-label="拼贴预览；触控设备需进入调整模式后移动内容"></canvas></div><div id="adjustBar" class="adjust-bar hidden"><span id="adjustLabel">正在调整构图</span><button id="finishAdjust" type="button">完成调整</button></div>
 
 <div class="card">
   <div class="mobile-quick" style="display:grid;grid-template-columns:1fr 1fr;gap:8px">
@@ -85,7 +85,7 @@ button:disabled,input:disabled,select:disabled{opacity:.45;cursor:not-allowed}.f
 <div class="font-note">内置字体：英文默认 Cormorant，中文默认 ChillHuoFangKai_F（寒蝉活仿楷）。每个文字框仍可单独选择字体和字重；其他字体选项使用当前设备已安装的字体。</div>
 <div class="actions"><button id="png" class="primary">保存 PNG</button><button id="jpeg">保存 JPG</button></div>
 <div class="note" id="note"></div>
-<div class="hint">iPhone / iPad：平时可直接单指上下滚动页面；需要移动照片或文字时，在对应框的设置中点“调整构图 / 调整位置”，进入调整模式后再单指拖动，图片可双指缩放，完成后点预览下方“完成调整”。Mac：仍可直接用鼠标拖动，也可把图片拖进对应框。规则网格可单独调整每行高度和每列宽度。导出尺寸 1800 × 2400 px。</div>
+<div class="hint">iPhone / iPad：平时单指滑动用于滚动页面；要移动照片或文字，请先在对应框点“调整构图 / 调整位置”，进入调整模式后单指移动，图片可双指缩放，完成后点预览下方“完成调整”。Mac：可直接用鼠标移动内容，也可把图片从 Finder 拖进对应框。手机或相机的大尺寸照片首次载入时会先优化用于画布，可能短暂停顿；之后的拖动和缩放会更流畅。规则网格可单独调整每行高度和每列宽度。导出尺寸 1800 × 2400 px。</div>
 
 <script>
 (()=>{'use strict';
@@ -374,7 +374,7 @@ async function exportImage(type){
      await navigator.share({files:[file],title:'3:4 拼贴'});setNote('已打开分享菜单。可选择“存储到文件”或“存储图像”。');return;
    }
  }catch(e){if(e.name==='AbortError'){setNote('已取消分享。');return;}console.warn(e);}
- const url=URL.createObjectURL(blob),a=document.createElement('a');a.href=url;a.download=name;document.body.appendChild(a);a.click();a.remove();setNote(`已生成 ${name}。如果没有直接保存，请在 Safari 的下载项中打开。`);setTimeout(()=>URL.revokeObjectURL(url),60000);
+ const url=URL.createObjectURL(blob),a=document.createElement('a');a.href=url;a.download=name;document.body.appendChild(a);a.click();a.remove();setNote(`已生成 ${name}。如果没有直接保存，请在浏览器的下载项中打开。`);setTimeout(()=>URL.revokeObjectURL(url),60000);
 }
 document.getElementById('png').addEventListener('click',()=>exportImage('image/png'));document.getElementById('jpeg').addEventListener('click',()=>exportImage('image/jpeg'));
 
