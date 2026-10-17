@@ -26,7 +26,7 @@ button:disabled,input:disabled,select:disabled{opacity:.45;cursor:not-allowed}.f
 .text-ui textarea{width:100%;min-height:74px;resize:vertical;border:1px solid #454545;border-radius:9px;background:#181818;color:#fff;padding:10px;font:16px/1.4 -apple-system,BlinkMacSystemFont,"Helvetica Neue",sans-serif}.font-custom{width:100%;margin-top:8px;border:1px solid #454545;border-radius:9px;background:#181818;color:#fff;padding:9px 10px;font:16px -apple-system,BlinkMacSystemFont,"Helvetica Neue",sans-serif}
 .hidden{display:none!important}.adjust-bar{display:flex;align-items:center;justify-content:space-between;gap:10px;margin:10px auto 0;max-width:420px;padding:9px 10px;border:1px solid #454545;border-radius:10px;background:#202020}.adjust-bar span{font-size:13px;color:#d8d8d8}.adjust-bar button{min-height:40px;padding:8px 14px;font-size:14px;flex:0 0 auto}.actions{display:flex;gap:10px;margin-top:12px}.actions button{flex:1;background:#444}.actions .primary{background:#b7c8e8;color:#131922}
 .hint,.font-note{font-size:12px;color:#aaa;line-height:1.5;margin:10px 0}.note{font-size:12px;min-height:18px;color:#a8cfae;margin-top:8px}
-.layout-note{font-size:12px;color:#aaa;line-height:1.45;margin-top:8px}.folder-status{font-size:12px;color:#aaa;line-height:1.4;margin-top:8px;overflow-wrap:anywhere}.band-editor{display:grid;grid-template-columns:minmax(0,1fr) 76px;gap:10px;align-items:center}.band-editor input[type=number]{width:76px;border:1px solid #454545;border-radius:8px;background:#181818;color:#fff;padding:8px;font:16px ui-monospace,SFMono-Regular,Menlo,monospace;text-align:right}.band-editor input[type=number]::-webkit-inner-spin-button{opacity:1}
+.layout-note{font-size:12px;color:#aaa;line-height:1.45;margin-top:8px}.folder-status{font-size:12px;color:#aaa;line-height:1.4;margin-top:8px;overflow-wrap:anywhere}.overlay-panel{display:grid;gap:10px;margin-top:10px}.overlay-card{background:#1d1d1d;border-radius:10px;padding:10px}.overlay-card .row{margin-top:8px}.band-editor{display:grid;grid-template-columns:minmax(0,1fr) 76px;gap:10px;align-items:center}.band-editor input[type=number]{width:76px;border:1px solid #454545;border-radius:8px;background:#181818;color:#fff;padding:8px;font:16px ui-monospace,SFMono-Regular,Menlo,monospace;text-align:right}.band-editor input[type=number]::-webkit-inner-spin-button{opacity:1}
 @media(max-width:620px){.slots-panel{grid-template-columns:1fr}.layout-grid{grid-template-columns:1fr}.preview-wrap{padding:8px}.card{padding:12px;margin:10px 0}.row{align-items:stretch}.row>label:first-child{align-self:center}.row select{min-width:0;max-width:68%}.color-pair{flex:1;justify-content:flex-end}.hex-input{font-size:16px}.actions{position:sticky;bottom:max(8px,env(safe-area-inset-bottom));z-index:5;background:rgba(21,21,21,.92);backdrop-filter:blur(10px);padding:8px 0}.actions button{min-height:48px}.mobile-quick{display:grid!important;grid-template-columns:1fr 1fr;gap:8px}}
 </style>
 </head>
@@ -83,7 +83,14 @@ button:disabled,input:disabled,select:disabled{opacity:.45;cursor:not-allowed}.f
 
 <div class="slots-panel" id="slotsPanel"></div>
 
-<div class="font-note">内置字体：英文默认 Cormorant，中文默认 ChillHuoFangKai_F（寒蝉活仿楷）。每个文字框仍可单独选择字体和字重；其他字体选项使用当前设备已安装的字体。</div>
+<div class="card">
+  <h2>叠加文字</h2>
+  <div class="layout-note">叠加文字会覆盖在整个拼图上方，不占用任何图片框。可添加多条文字，并分别调整位置、字号、颜色、字体和字重。</div>
+  <button id="addOverlay" type="button" style="width:100%;margin-top:10px">添加文字</button>
+  <div id="overlayPanel" class="overlay-panel"></div>
+</div>
+
+<div class="font-note">内置字体：英文默认 Cormorant，中文默认 ChillHuoFangKai_F（寒蝉活仿楷）。框内文字和叠加文字都可单独选择字体和字重；其他字体选项使用当前设备已安装的字体。</div>
 
 <div class="card">
   <h2>导出</h2>
@@ -102,7 +109,7 @@ button:disabled,input:disabled,select:disabled{opacity:.45;cursor:not-allowed}.f
 
 <div class="actions"><button id="png" class="primary">保存 PNG</button><button id="jpeg">保存 JPG</button></div>
 <div class="note" id="note"></div>
-<div class="hint">iPhone / iPad：平时单指滑动用于滚动页面；要移动照片或文字，请先在对应框点“调整构图 / 调整位置”，进入调整模式后单指移动，图片可双指缩放，完成后点预览下方“完成调整”。Mac：可直接用鼠标移动内容，也可把图片从 Finder 拖进对应框。需要重排内容时点“调整顺序”，再把一个框拖到另一个框上交换位置。手机或相机的大尺寸照片首次载入时会先优化用于画布，可能短暂停顿；之后的拖动和缩放会更流畅。规则网格可单独调整每行高度和每列宽度。导出尺寸 1800 × 2400 px。</div>
+<div class="hint">iPhone / iPad：平时单指滑动用于滚动页面；要移动照片、框内文字或叠加文字，请先点对应的“调整构图 / 调整位置”，进入调整模式后单指移动，图片可双指缩放，完成后点预览下方“完成调整”。Mac：可直接用鼠标移动框内内容；需要缩放图片时，点“调整构图”后可用滚轮或触控板双指滚动缩放，也可继续使用缩放滑块。图片仍可从 Finder 拖进对应框。需要重排内容时点“调整顺序”，再把一个框拖到另一个框上交换位置。手机或相机的大尺寸照片首次载入时会先优化用于画布，可能短暂停顿；之后的拖动和缩放会更流畅。规则网格可单独调整每行高度和每列宽度。导出尺寸 1800 × 2400 px。</div>
 
 <script>
 (()=>{'use strict';
@@ -112,8 +119,10 @@ const slotsPanel=document.getElementById('slotsPanel'),batchFiles=document.getEl
 const adjustBar=document.getElementById('adjustBar'),adjustLabel=document.getElementById('adjustLabel'),finishAdjustBtn=document.getElementById('finishAdjust');
 const gridAdjust=document.getElementById('gridAdjust'),rowAdjust=document.getElementById('rowAdjust'),colAdjust=document.getElementById('colAdjust'),resetGrid=document.getElementById('resetGrid');
 const saveMode=document.getElementById('saveMode'),folderControls=document.getElementById('folderControls'),chooseFolderBtn=document.getElementById('chooseFolder'),folderStatus=document.getElementById('folderStatus'),saveModeNote=document.getElementById('saveModeNote');
+const addOverlayBtn=document.getElementById('addOverlay'),overlayPanel=document.getElementById('overlayPanel');
 const W=900,H=1200;let boxes=[],dragHover=-1,reorderMode=false,reorderFrom=-1,reorderHover=-1,directoryHandle=null;
 const slots=Array.from({length:9},()=>({mode:'image',img:null,url:null,zoom:1,dx:0,dy:0,text:'',fontSize:54,fontWeight:500,textColor:'#E8DFA6',fontChoice:'auto',customFont:'',textDx:0,textDy:0}));
+const overlays=[];
 const layoutInfo={
   '2v':{n:2,adjust:true,note:'两张上下排列；主区域比例控制上框高度。'},
   '2h':{n:2,adjust:true,note:'两张左右排列；主区域比例控制左框宽度。'},
@@ -239,7 +248,8 @@ function textFont(s){let family=FONT_STACKS[s.fontChoice]||FONT_STACKS.auto;if(s
 function textTokens(p){return p.match(/[\u3400-\u9FFF]|[^\u3400-\u9FFF\s]+|\s+/g)||[''];}
 function wrappedLines(c,text,maxWidth){const out=[];for(const para of String(text||'').split('\n')){if(para===''){out.push('');continue;}let line='';for(const tok of textTokens(para)){const tryLine=line+tok;if(!line||c.measureText(tryLine).width<=maxWidth){line=tryLine;}else{out.push(line.trimEnd());line=tok.trimStart();}}out.push(line.trimEnd());}return out.length?out:[''];}
 function drawTextSlot(c,s,b,placeholders){if(!s.text&&placeholders){c.fillStyle='#363636';c.fillRect(b.x,b.y,b.w,b.h);c.fillStyle='#999';c.font='30px -apple-system,sans-serif';c.textAlign='center';c.textBaseline='middle';c.fillText('文字框',b.x+b.w/2,b.y+b.h/2);return;}c.font=textFont(s);c.fillStyle=s.textColor;c.textAlign='center';c.textBaseline='middle';const maxWidth=Math.max(40,b.w-48),lines=wrappedLines(c,s.text,maxWidth),lh=s.fontSize*1.18,total=Math.max(lh,lines.length*lh),cx=b.x+b.w/2+s.textDx,cy=b.y+b.h/2+s.textDy,start=cy-total/2+lh/2;lines.forEach((line,j)=>c.fillText(line,cx,start+j*lh,maxWidth));}
-function draw(c,width,height,placeholders){const sx=width/W,sy=height/H;c.save();c.setTransform(sx,0,0,sy,0,0);c.fillStyle=bgEl.value;c.fillRect(0,0,W,H);boxes=layoutRects();boxes.forEach((b,i)=>{const s=slots[i];c.save();roundPath(c,b,val(radiusEl)*3);c.clip();if(s.mode==='image'){if(s.img){clampImage(s,b);const d=imageBounds(s,b);c.drawImage(s.img,b.x+(b.w-d.w)/2+s.dx,b.y+(b.h-d.h)/2+s.dy,d.w,d.h);}else if(placeholders){c.fillStyle='#363636';c.fillRect(b.x,b.y,b.w,b.h);c.fillStyle='#999';c.font='28px -apple-system,sans-serif';c.textAlign='center';c.textBaseline='middle';c.fillText('轻点选择图片',b.x+b.w/2,b.y+b.h/2);}}else drawTextSlot(c,s,b,placeholders);if(placeholders&&dragHover===i){c.fillStyle='rgba(255,255,255,.16)';c.fillRect(b.x,b.y,b.w,b.h);c.strokeStyle='rgba(255,255,255,.9)';c.lineWidth=6;c.setLineDash([18,14]);roundPath(c,{x:b.x+9,y:b.y+9,w:b.w-18,h:b.h-18},Math.max(0,val(radiusEl)*3-9));c.stroke();}if(placeholders&&activeAdjust===i){c.strokeStyle='#b7c8e8';c.lineWidth=6;c.setLineDash([]);roundPath(c,{x:b.x+6,y:b.y+6,w:b.w-12,h:b.h-12},Math.max(0,val(radiusEl)*3-6));c.stroke();}if(placeholders&&reorderMode&&(reorderFrom===i||reorderHover===i)){c.fillStyle=reorderHover===i?'rgba(232,223,166,.18)':'rgba(255,255,255,.08)';c.fillRect(b.x,b.y,b.w,b.h);c.strokeStyle='#E8DFA6';c.lineWidth=6;c.setLineDash([18,14]);roundPath(c,{x:b.x+8,y:b.y+8,w:b.w-16,h:b.h-16},Math.max(0,val(radiusEl)*3-8));c.stroke();}c.restore();});c.restore();}
+function drawOverlayText(c,o,i,placeholders){if(!o.text.trim())return;c.save();c.font=textFont(o);c.fillStyle=o.textColor;c.textAlign='center';c.textBaseline='middle';const maxWidth=W-80,lines=wrappedLines(c,o.text,maxWidth),lh=o.fontSize*1.18,total=Math.max(lh,lines.length*lh),start=o.y-total/2+lh/2;lines.forEach((line,j)=>c.fillText(line,o.x,start+j*lh,maxWidth));if(placeholders&&activeOverlay===i){const widths=lines.map(line=>c.measureText(line).width),tw=Math.min(maxWidth,Math.max(40,...widths)),th=Math.max(lh,total);c.strokeStyle='#E8DFA6';c.lineWidth=3;c.setLineDash([10,8]);c.strokeRect(o.x-tw/2-10,o.y-th/2-8,tw+20,th+16);}c.restore();}
+function draw(c,width,height,placeholders){const sx=width/W,sy=height/H;c.save();c.setTransform(sx,0,0,sy,0,0);c.fillStyle=bgEl.value;c.fillRect(0,0,W,H);boxes=layoutRects();boxes.forEach((b,i)=>{const s=slots[i];c.save();roundPath(c,b,val(radiusEl)*3);c.clip();if(s.mode==='image'){if(s.img){clampImage(s,b);const d=imageBounds(s,b);c.drawImage(s.img,b.x+(b.w-d.w)/2+s.dx,b.y+(b.h-d.h)/2+s.dy,d.w,d.h);}else if(placeholders){c.fillStyle='#363636';c.fillRect(b.x,b.y,b.w,b.h);c.fillStyle='#999';c.font='28px -apple-system,sans-serif';c.textAlign='center';c.textBaseline='middle';c.fillText('轻点选择图片',b.x+b.w/2,b.y+b.h/2);}}else drawTextSlot(c,s,b,placeholders);if(placeholders&&dragHover===i){c.fillStyle='rgba(255,255,255,.16)';c.fillRect(b.x,b.y,b.w,b.h);c.strokeStyle='rgba(255,255,255,.9)';c.lineWidth=6;c.setLineDash([18,14]);roundPath(c,{x:b.x+9,y:b.y+9,w:b.w-18,h:b.h-18},Math.max(0,val(radiusEl)*3-9));c.stroke();}if(placeholders&&activeAdjust===i){c.strokeStyle='#b7c8e8';c.lineWidth=6;c.setLineDash([]);roundPath(c,{x:b.x+6,y:b.y+6,w:b.w-12,h:b.h-12},Math.max(0,val(radiusEl)*3-6));c.stroke();}if(placeholders&&reorderMode&&(reorderFrom===i||reorderHover===i)){c.fillStyle=reorderHover===i?'rgba(232,223,166,.18)':'rgba(255,255,255,.08)';c.fillRect(b.x,b.y,b.w,b.h);c.strokeStyle='#E8DFA6';c.lineWidth=6;c.setLineDash([18,14]);roundPath(c,{x:b.x+8,y:b.y+8,w:b.w-16,h:b.h-16},Math.max(0,val(radiusEl)*3-8));c.stroke();}c.restore();});overlays.forEach((o,i)=>drawOverlayText(c,o,i,placeholders));c.restore();}
 function redraw(){draw(ctx,W,H,true)}
 function setNote(t){document.getElementById('note').textContent=t}
 function syncLayoutUI(){const info=layoutInfo[layoutEl.value];ratioEl.disabled=!info.adjust;document.getElementById('ratioOut').textContent=info.adjust?ratioEl.value+'%':'固定';document.getElementById('layoutNote').textContent=info.note;document.getElementById('marginOut').textContent=marginEl.value;document.getElementById('gapOut').textContent=gapEl.value;document.getElementById('radiusOut').textContent=radiusEl.value;renderGridAdjust();renderSlotCards();redraw();}
@@ -248,9 +258,9 @@ function syncLayoutUI(){const info=layoutInfo[layoutEl.value];ratioEl.disabled=!
 function slotCardHTML(i){const s=slots[i],n=i+1;return `<details class="slot-card" id="card${i}" ${i===0?'open':''}><summary>框 ${n}<span id="summaryMode${i}">${s.mode==='text'?'文字':'图片'}</span></summary><div class="slot-body"><div class="row"><label for="mode${i}">内容</label><select id="mode${i}"><option value="image" ${s.mode==='image'?'selected':''}>图片</option><option value="text" ${s.mode==='text'?'selected':''}>文字</option></select></div><div class="image-ui ${s.mode==='text'?'hidden':''}" id="imageUI${i}"><div class="slot-tools"><label class="file-btn">选择图片<input id="file${i}" type="file" accept="image/*"></label><button id="adjust${i}" type="button">调整构图</button><button id="reset${i}" type="button">重置构图</button></div><div class="control"><label>缩放 <output id="zoom${i}Out">${Math.round(s.zoom*100)}%</output></label><input id="zoom${i}" type="range" min="100" max="350" value="${Math.round(s.zoom*100)}"></div></div><div class="text-ui ${s.mode==='image'?'hidden':''}" id="textUI${i}"><div class="control"><label for="text${i}">文字</label><textarea id="text${i}" placeholder="输入文字…"></textarea></div><div class="row"><label for="fontChoice${i}">字体</label><select id="fontChoice${i}"><option value="auto" ${s.fontChoice==='auto'?'selected':''}>默认（Cormorant / 寒蝉活仿楷）</option><option value="cormorant" ${s.fontChoice==='cormorant'?'selected':''}>Cormorant</option><option value="chillhuo" ${s.fontChoice==='chillhuo'?'selected':''}>寒蝉活仿楷</option><option value="sourcehan" ${s.fontChoice==='sourcehan'?'selected':''}>思源黑体</option><option value="helvetica" ${s.fontChoice==='helvetica'?'selected':''}>Helvetica Neue</option><option value="avenir" ${s.fontChoice==='avenir'?'selected':''}>Avenir Next</option><option value="baskerville" ${s.fontChoice==='baskerville'?'selected':''}>Baskerville</option><option value="didot" ${s.fontChoice==='didot'?'selected':''}>Didot</option><option value="georgia" ${s.fontChoice==='georgia'?'selected':''}>Georgia</option><option value="times" ${s.fontChoice==='times'?'selected':''}>Times New Roman</option><option value="arial" ${s.fontChoice==='arial'?'selected':''}>Arial</option><option value="custom" ${s.fontChoice==='custom'?'selected':''}>自定义…</option></select></div><input id="customFont${i}" class="font-custom ${s.fontChoice==='custom'?'':'hidden'}" type="text" placeholder="设备已安装的字体名称" spellcheck="false"><div class="row" style="margin-top:10px"><label for="fontWeight${i}">字重</label><select id="fontWeight${i}"><option value="400" ${s.fontWeight===400?'selected':''}>Regular</option><option value="500" ${s.fontWeight===500?'selected':''}>Medium</option><option value="600" ${s.fontWeight===600?'selected':''}>Semibold</option><option value="700" ${s.fontWeight===700?'selected':''}>Bold</option></select></div><div class="control"><label>字号 <output id="fontSize${i}Out">${s.fontSize} px</output></label><input id="fontSize${i}" type="range" min="16" max="140" value="${s.fontSize}"></div><div class="row"><label for="textColor${i}">字体颜色</label><div class="color-pair"><input id="textColor${i}" type="color" value="${s.textColor}"><input id="textColor${i}Hex" class="hex-input" type="text" value="${s.textColor.toUpperCase()}" maxlength="7" spellcheck="false"></div></div><div class="slot-tools"><button id="adjustText${i}" type="button">调整位置</button><button id="resetText${i}" type="button">文字居中</button></div></div></div></details>`;}
 function renderSlotCards(){const n=activeCount();slotsPanel.innerHTML=Array.from({length:n},(_,i)=>slotCardHTML(i)).join('');for(let i=0;i<n;i++)bindSlotUI(i);}
 
-let activeAdjust=-1;
+let activeAdjust=-1,activeOverlay=-1;
 function finishAdjustMode(){
-  activeAdjust=-1;pointers.clear();gesture=null;
+  activeAdjust=-1;activeOverlay=-1;pointers.clear();gesture=null;
   canvas.classList.remove('adjusting');adjustBar.classList.add('hidden');
   finishAdjustBtn.textContent='完成调整';redraw();
 }
@@ -269,19 +279,25 @@ function startReorderMode(){
 }
 function startAdjustMode(i){
   if(reorderMode)finishReorderMode();
+  activeOverlay=-1;
   if(i<0||i>=activeCount())return;
   const s=slots[i];
   if(s.mode==='image'&&!s.img){setNote('请先为这个框选择图片。');return;}
   if(s.mode==='text'&&!s.text.trim()){setNote('请先输入文字。');return;}
   activeAdjust=i;
   canvas.classList.add('adjusting');
-  adjustLabel.textContent=`正在调整框 ${i+1} · ${s.mode==='image'?'单指移动 / 双指缩放':'单指移动文字'}`;
+  adjustLabel.textContent=`正在调整框 ${i+1} · ${s.mode==='image'?'拖动移动 / 双指、滚轮或触控板缩放':'拖动文字位置'}`;
   adjustBar.classList.remove('hidden');
   redraw();
   setTimeout(()=>canvas.scrollIntoView({behavior:'smooth',block:'center'}),0);
 }
 finishAdjustBtn.addEventListener('click',()=>reorderMode?finishReorderMode():finishAdjustMode());
 reorderBtn.addEventListener('click',()=>reorderMode?finishReorderMode():startReorderMode());
+
+function overlayCardHTML(i){const o=overlays[i];return `<div class="overlay-card"><div class="row"><strong>文字 ${i+1}</strong><button id="removeOverlay${i}" type="button" style="min-height:38px;padding:6px 10px;font-size:13px">删除</button></div><div class="control"><label for="overlayText${i}">文字</label><textarea id="overlayText${i}" placeholder="输入叠加文字…" style="width:100%;min-height:70px;resize:vertical;border:1px solid #454545;border-radius:9px;background:#181818;color:#fff;padding:10px;font:16px/1.4 -apple-system,BlinkMacSystemFont,'Helvetica Neue',sans-serif"></textarea></div><div class="row"><label for="overlayFont${i}">字体</label><select id="overlayFont${i}"><option value="auto" ${o.fontChoice==='auto'?'selected':''}>默认（Cormorant / 寒蝉活仿楷）</option><option value="cormorant" ${o.fontChoice==='cormorant'?'selected':''}>Cormorant</option><option value="chillhuo" ${o.fontChoice==='chillhuo'?'selected':''}>寒蝉活仿楷</option><option value="sourcehan" ${o.fontChoice==='sourcehan'?'selected':''}>思源黑体</option><option value="helvetica" ${o.fontChoice==='helvetica'?'selected':''}>Helvetica Neue</option><option value="avenir" ${o.fontChoice==='avenir'?'selected':''}>Avenir Next</option><option value="baskerville" ${o.fontChoice==='baskerville'?'selected':''}>Baskerville</option><option value="didot" ${o.fontChoice==='didot'?'selected':''}>Didot</option><option value="georgia" ${o.fontChoice==='georgia'?'selected':''}>Georgia</option><option value="times" ${o.fontChoice==='times'?'selected':''}>Times New Roman</option><option value="arial" ${o.fontChoice==='arial'?'selected':''}>Arial</option><option value="custom" ${o.fontChoice==='custom'?'selected':''}>自定义…</option></select></div><input id="overlayCustom${i}" class="font-custom ${o.fontChoice==='custom'?'':'hidden'}" type="text" placeholder="设备已安装的字体名称" spellcheck="false"><div class="row" style="margin-top:10px"><label for="overlayWeight${i}">字重</label><select id="overlayWeight${i}"><option value="400" ${o.fontWeight===400?'selected':''}>Regular</option><option value="500" ${o.fontWeight===500?'selected':''}>Medium</option><option value="600" ${o.fontWeight===600?'selected':''}>Semibold</option><option value="700" ${o.fontWeight===700?'selected':''}>Bold</option></select></div><div class="control"><label>字号 <output id="overlaySize${i}Out">${o.fontSize} px</output></label><input id="overlaySize${i}" type="range" min="16" max="180" value="${o.fontSize}"></div><div class="row"><label for="overlayColor${i}">字体颜色</label><div class="color-pair"><input id="overlayColor${i}" type="color" value="${o.textColor}"><input id="overlayColor${i}Hex" class="hex-input" type="text" value="${o.textColor.toUpperCase()}" maxlength="7" spellcheck="false"></div></div><div class="slot-tools"><button id="adjustOverlay${i}" type="button">调整位置</button><button id="centerOverlay${i}" type="button">居中</button></div></div>`;}
+function renderOverlays(){overlayPanel.innerHTML=overlays.map((_,i)=>overlayCardHTML(i)).join('');overlays.forEach((o,i)=>{const text=document.getElementById('overlayText'+i),font=document.getElementById('overlayFont'+i),custom=document.getElementById('overlayCustom'+i),weight=document.getElementById('overlayWeight'+i),size=document.getElementById('overlaySize'+i),color=document.getElementById('overlayColor'+i),hex=document.getElementById('overlayColor'+i+'Hex');text.value=o.text;custom.value=o.customFont;text.addEventListener('input',()=>{o.text=text.value;redraw();});font.addEventListener('change',()=>{o.fontChoice=font.value;custom.classList.toggle('hidden',o.fontChoice!=='custom');redraw();});custom.addEventListener('input',()=>{o.customFont=custom.value;redraw();});weight.addEventListener('change',()=>{o.fontWeight=Number(weight.value);redraw();});size.addEventListener('input',()=>{o.fontSize=Number(size.value);document.getElementById('overlaySize'+i+'Out').textContent=size.value+' px';redraw();});bindColor(color,hex,v=>{o.textColor=v;redraw();});document.getElementById('adjustOverlay'+i).addEventListener('click',()=>startOverlayAdjust(i));document.getElementById('centerOverlay'+i).addEventListener('click',()=>{o.x=W/2;o.y=H/2;redraw();});document.getElementById('removeOverlay'+i).addEventListener('click',()=>{if(activeOverlay===i)finishAdjustMode();overlays.splice(i,1);renderOverlays();redraw();});});}
+function startOverlayAdjust(i){if(reorderMode)finishReorderMode();activeAdjust=-1;activeOverlay=i;if(!overlays[i]||!overlays[i].text.trim()){setNote('请先输入叠加文字。');return;}canvas.classList.add('adjusting');adjustLabel.textContent=`正在调整叠加文字 ${i+1} · 拖动改变位置`;adjustBar.classList.remove('hidden');redraw();setTimeout(()=>canvas.scrollIntoView({behavior:'smooth',block:'center'}),0);}
+addOverlayBtn.addEventListener('click',()=>{overlays.push({text:'',fontSize:64,fontWeight:500,textColor:'#E8DFA6',fontChoice:'auto',customFont:'',x:W/2,y:H/2});renderOverlays();const t=document.getElementById('overlayText'+(overlays.length-1));if(t)t.focus();});
 
 function bindSlotUI(i){const s=slots[i],mode=document.getElementById('mode'+i),file=document.getElementById('file'+i),zoom=document.getElementById('zoom'+i),text=document.getElementById('text'+i),fontChoice=document.getElementById('fontChoice'+i),customFont=document.getElementById('customFont'+i),fontWeight=document.getElementById('fontWeight'+i),fontSize=document.getElementById('fontSize'+i),color=document.getElementById('textColor'+i),hex=document.getElementById('textColor'+i+'Hex');text.value=s.text;customFont.value=s.customFont;
  mode.addEventListener('change',()=>{if(activeAdjust===i)finishAdjustMode();s.mode=mode.value;document.getElementById('imageUI'+i).classList.toggle('hidden',s.mode==='text');document.getElementById('textUI'+i).classList.toggle('hidden',s.mode==='image');const sm=document.getElementById('summaryMode'+i);if(sm)sm.textContent=s.mode==='text'?'文字':'图片';redraw();});
@@ -376,6 +392,11 @@ canvas.addEventListener('pointerdown',e=>{
     const i=hit(pt);if(i<0||pointers.size)return;
     reorderFrom=i;reorderHover=i;pointers.set(e.pointerId,pt);canvas.setPointerCapture(e.pointerId);redraw();e.preventDefault();return;
   }
+  if(activeOverlay>=0){
+    if(pointers.size)return;
+    const o=overlays[activeOverlay];if(!o)return;
+    gesture={kind:'overlay',i:activeOverlay,cx:pt.x,cy:pt.y,dx:o.x,dy:o.y};pointers.set(e.pointerId,pt);canvas.setPointerCapture(e.pointerId);e.preventDefault();return;
+  }
   const i=activeAdjust>=0?activeAdjust:hit(pt);
   if(i<0)return;
   if(isTouch&&activeAdjust<0)return; // one finger remains available for page scrolling
@@ -390,7 +411,11 @@ canvas.addEventListener('pointermove',e=>{
     const pt=point(e);pointers.set(e.pointerId,pt);const i=hit(pt);if(i!==reorderHover){reorderHover=i;redraw();}e.preventDefault();return;
   }
   if(!pointers.has(e.pointerId)||!gesture)return;
-  pointers.set(e.pointerId,point(e));const ps=[...pointers.values()],s=slots[gesture.i],cx=ps.reduce((a,q)=>a+q.x,0)/ps.length,cy=ps.reduce((a,q)=>a+q.y,0)/ps.length;
+  const current=point(e);pointers.set(e.pointerId,current);
+  if(gesture.kind==='overlay'){
+    const o=overlays[gesture.i];if(!o)return;o.x=Math.max(0,Math.min(W,gesture.dx+(current.x-gesture.cx)));o.y=Math.max(0,Math.min(H,gesture.dy+(current.y-gesture.cy)));redraw();e.preventDefault();return;
+  }
+  const ps=[...pointers.values()],s=slots[gesture.i],cx=ps.reduce((a,q)=>a+q.x,0)/ps.length,cy=ps.reduce((a,q)=>a+q.y,0)/ps.length;
   if(gesture.mode==='image'){s.dx=gesture.dx+(cx-gesture.cx);s.dy=gesture.dy+(cy-gesture.cy);if(ps.length>=2&&gesture.dist>0){const d=Math.hypot(ps[0].x-ps[1].x,ps[0].y-ps[1].y);s.zoom=Math.max(1,Math.min(3.5,gesture.zoom*d/gesture.dist));const z=document.getElementById('zoom'+gesture.i),o=document.getElementById('zoom'+gesture.i+'Out');if(z)z.value=Math.round(s.zoom*100);if(o)o.textContent=Math.round(s.zoom*100)+'%';}clampImage(s,layoutRects()[gesture.i]);}
   else{s.textDx=gesture.dx+(cx-gesture.cx);s.textDy=gesture.dy+(cy-gesture.cy);}
   redraw();e.preventDefault();
@@ -407,10 +432,23 @@ function end(e){
     }
     redraw();return;
   }
+  if(gesture?.kind==='overlay'){pointers.delete(e.pointerId);gesture=null;return;}
   pointers.delete(e.pointerId);snapshot();
 }
 canvas.addEventListener('pointerup',end);canvas.addEventListener('pointercancel',end);canvas.addEventListener('lostpointercapture',end);
-canvas.addEventListener('click',e=>{if(reorderMode)return;const i=hit(point(e));if(i>=0&&slots[i].mode==='image'&&!slots[i].img){const f=document.getElementById('file'+i);if(f)f.click();}});
+canvas.addEventListener('click',e=>{if(reorderMode||activeOverlay>=0)return;const i=hit(point(e));if(i>=0&&slots[i].mode==='image'&&!slots[i].img){const f=document.getElementById('file'+i);if(f)f.click();}});
+canvas.addEventListener('wheel',e=>{
+  if(reorderMode||activeOverlay>=0)return;
+  const pt=point(e),i=activeAdjust>=0?activeAdjust:hit(pt);if(i<0)return;
+  const s=slots[i];if(s.mode!=='image'||!s.img)return;
+  if(activeAdjust<0&&!e.ctrlKey)return;
+  const factor=Math.exp(-e.deltaY*0.0025);s.zoom=Math.max(1,Math.min(3.5,s.zoom*factor));clampImage(s,layoutRects()[i]);
+  const z=document.getElementById('zoom'+i),o=document.getElementById('zoom'+i+'Out');if(z)z.value=Math.round(s.zoom*100);if(o)o.textContent=Math.round(s.zoom*100)+'%';redraw();e.preventDefault();
+},{passive:false});
+let safariGestureStart=null;
+canvas.addEventListener('gesturestart',e=>{if(activeAdjust<0||reorderMode||activeOverlay>=0)return;const s=slots[activeAdjust];if(s?.mode==='image'&&s.img){safariGestureStart=s.zoom;e.preventDefault();}});
+canvas.addEventListener('gesturechange',e=>{if(safariGestureStart==null||activeAdjust<0)return;const s=slots[activeAdjust];s.zoom=Math.max(1,Math.min(3.5,safariGestureStart*e.scale));clampImage(s,layoutRects()[activeAdjust]);const z=document.getElementById('zoom'+activeAdjust),o=document.getElementById('zoom'+activeAdjust+'Out');if(z)z.value=Math.round(s.zoom*100);if(o)o.textContent=Math.round(s.zoom*100)+'%';redraw();e.preventDefault();});
+canvas.addEventListener('gestureend',()=>{safariGestureStart=null;});
 canvas.addEventListener('dragenter',e=>e.preventDefault());
 canvas.addEventListener('dragover',e=>{e.preventDefault();if(reorderMode)return;if(e.dataTransfer)e.dataTransfer.dropEffect='copy';const i=hit(point(e));if(i!==dragHover){dragHover=i;redraw();}});
 canvas.addEventListener('dragleave',e=>{const r=canvas.getBoundingClientRect();if(e.clientX<=r.left||e.clientX>=r.right||e.clientY<=r.top||e.clientY>=r.bottom){dragHover=-1;redraw();}});
@@ -476,7 +514,7 @@ async function exportImage(type){
 }
 document.getElementById('png').addEventListener('click',()=>exportImage('image/png'));document.getElementById('jpeg').addEventListener('click',()=>exportImage('image/jpeg'));
 
-syncLayoutUI();document.fonts.ready.then(redraw).catch(()=>redraw());
+syncLayoutUI();renderOverlays();document.fonts.ready.then(redraw).catch(()=>redraw());
 })();
 </script>
 </body>
