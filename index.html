@@ -120,7 +120,7 @@ button:disabled,input:disabled,select:disabled{opacity:.45;cursor:not-allowed}.f
 
 <div class="actions"><button id="png" class="primary">保存 PNG</button><button id="jpeg">保存 JPG</button></div>
 <div class="note" id="note"></div>
-<div class="hint">iPhone / iPad：轻点预览中的已有图片或框内文字即可进入调整模式；平时单指上下滑动仍用于滚动页面。进入调整模式后单指移动图片，双指缩放；也可以继续使用各框里的“调整构图 / 调整位置”按钮。Mac：单击已有框内容可进入调整模式，也可直接用鼠标拖动；进入图片调整模式后可用鼠标滚轮或触控板双指滚动缩放，也可使用缩放滑块。图片可从 Finder 拖进对应框。需要重排内容时点“调整顺序”，再把一个框拖到另一个框上交换位置。叠加文字默认使用柔和的暖白色，可按需开启并调整阴影。手机或相机的大尺寸照片首次载入时可能短暂停顿；之后的拖动和缩放会更流畅。规则网格可单独调整每行高度和每列宽度。导出尺寸 1800 × 2400 px。</div>
+<div class="hint">iPhone / iPad：轻点预览中的已有图片或框内文字即可进入调整模式；平时单指上下滑动仍用于滚动页面。进入调整模式后单指移动图片，双指缩放；拖动接近框中心时会自动吸附。也可以继续使用各框里的“调整构图 / 调整位置”按钮。Mac：单击已有框内容可进入调整模式，也可直接用鼠标拖动；拖动接近框中心时会自动吸附，进入图片调整模式后可用鼠标滚轮或触控板双指滚动缩放，也可使用缩放滑块。图片可从 Finder 拖进对应框。需要重排内容时点“调整顺序”，再把一个框拖到另一个框上交换位置。叠加文字默认使用柔和的暖白色，可按需开启并调整阴影。手机或相机的大尺寸照片首次载入时可能短暂停顿；之后的拖动和缩放会更流畅。规则网格可单独调整每行高度和每列宽度。导出尺寸 1800 × 2400 px。</div>
 
 <script>
 (()=>{'use strict';
@@ -131,7 +131,7 @@ const adjustBar=document.getElementById('adjustBar'),adjustLabel=document.getEle
 const gridAdjust=document.getElementById('gridAdjust'),rowAdjust=document.getElementById('rowAdjust'),colAdjust=document.getElementById('colAdjust'),resetGrid=document.getElementById('resetGrid');
 const saveMode=document.getElementById('saveMode'),folderControls=document.getElementById('folderControls'),chooseFolderBtn=document.getElementById('chooseFolder'),folderStatus=document.getElementById('folderStatus'),saveModeNote=document.getElementById('saveModeNote');
 const addOverlayBtn=document.getElementById('addOverlay'),overlayPanel=document.getElementById('overlayPanel');
-const W=900,H=1200;let boxes=[],dragHover=-1,reorderMode=false,reorderFrom=-1,reorderHover=-1,directoryHandle=null,overlayGuides={x:false,y:false};
+const W=900,H=1200;let boxes=[],dragHover=-1,reorderMode=false,reorderFrom=-1,reorderHover=-1,directoryHandle=null,overlayGuides={x:false,y:false},imageGuides={x:false,y:false};
 const slots=Array.from({length:9},()=>({mode:'image',img:null,url:null,zoom:1,dx:0,dy:0,text:'',fontSize:54,fontWeight:500,textColor:'#E8DFA6',fontChoice:'auto',customFont:'',textDx:0,textDy:0}));
 const overlays=[];
 const layoutInfo={
@@ -270,7 +270,7 @@ function wrappedLines(c,text,maxWidth){const out=[];for(const para of String(tex
 function drawTextSlot(c,s,b,placeholders){if(!s.text&&placeholders){c.fillStyle='#363636';c.fillRect(b.x,b.y,b.w,b.h);c.fillStyle='#999';c.font='30px -apple-system,sans-serif';c.textAlign='center';c.textBaseline='middle';c.fillText('文字框',b.x+b.w/2,b.y+b.h/2);return;}c.font=textFont(s);c.fillStyle=s.textColor;c.textAlign='center';c.textBaseline='middle';const maxWidth=Math.max(40,b.w-48),lines=wrappedLines(c,s.text,maxWidth),lh=s.fontSize*1.18,total=Math.max(lh,lines.length*lh),cx=b.x+b.w/2+s.textDx,cy=b.y+b.h/2+s.textDy,start=cy-total/2+lh/2;lines.forEach((line,j)=>c.fillText(line,cx,start+j*lh,maxWidth));}
 function drawOverlayText(c,o,i,placeholders){if(!o.text.trim())return;c.save();c.font=textFont(o);c.fillStyle=o.textColor;c.textAlign='center';c.textBaseline='middle';if(o.shadowEnabled){c.shadowColor=shadowRGBA(o.shadowColor,o.shadowOpacity);c.shadowBlur=Number(o.shadowBlur)||0;c.shadowOffsetX=Number(o.shadowX)||0;c.shadowOffsetY=Number(o.shadowY)||0;}const maxWidth=W-80,lines=wrappedLines(c,o.text,maxWidth),lh=o.fontSize*1.18,total=Math.max(lh,lines.length*lh),start=o.y-total/2+lh/2;lines.forEach((line,j)=>c.fillText(line,o.x,start+j*lh,maxWidth));c.shadowColor='transparent';c.shadowBlur=0;c.shadowOffsetX=0;c.shadowOffsetY=0;if(placeholders&&activeOverlay===i){const widths=lines.map(line=>c.measureText(line).width),tw=Math.min(maxWidth,Math.max(40,...widths)),th=Math.max(lh,total);c.strokeStyle='#E8DFA6';c.lineWidth=3;c.setLineDash([10,8]);c.strokeRect(o.x-tw/2-10,o.y-th/2-8,tw+20,th+16);}c.restore();}
 function drawOverlayGuides(c,placeholders){if(!placeholders||activeOverlay<0||(!overlayGuides.x&&!overlayGuides.y))return;c.save();c.strokeStyle='#b7c8e8';c.lineWidth=3;c.setLineDash([12,10]);c.beginPath();if(overlayGuides.x){c.moveTo(W/2,0);c.lineTo(W/2,H);}if(overlayGuides.y){c.moveTo(0,H/2);c.lineTo(W,H/2);}c.stroke();if(overlayGuides.x&&overlayGuides.y){c.setLineDash([]);c.fillStyle='#b7c8e8';c.beginPath();c.arc(W/2,H/2,6,0,Math.PI*2);c.fill();}c.restore();}
-function draw(c,width,height,placeholders){const sx=width/W,sy=height/H;c.save();c.setTransform(sx,0,0,sy,0,0);c.fillStyle=bgEl.value;c.fillRect(0,0,W,H);boxes=layoutRects();boxes.forEach((b,i)=>{const s=slots[i];c.save();roundPath(c,b,val(radiusEl)*3);c.clip();if(s.mode==='image'){if(s.img){clampImage(s,b);const d=imageBounds(s,b);c.drawImage(s.img,b.x+(b.w-d.w)/2+s.dx,b.y+(b.h-d.h)/2+s.dy,d.w,d.h);}else if(placeholders){c.fillStyle='#363636';c.fillRect(b.x,b.y,b.w,b.h);c.fillStyle='#999';c.font='28px -apple-system,sans-serif';c.textAlign='center';c.textBaseline='middle';c.fillText('轻点选择图片',b.x+b.w/2,b.y+b.h/2);}}else drawTextSlot(c,s,b,placeholders);if(placeholders&&dragHover===i){c.fillStyle='rgba(255,255,255,.16)';c.fillRect(b.x,b.y,b.w,b.h);c.strokeStyle='rgba(255,255,255,.9)';c.lineWidth=6;c.setLineDash([18,14]);roundPath(c,{x:b.x+9,y:b.y+9,w:b.w-18,h:b.h-18},Math.max(0,val(radiusEl)*3-9));c.stroke();}if(placeholders&&activeAdjust===i){c.strokeStyle='#b7c8e8';c.lineWidth=6;c.setLineDash([]);roundPath(c,{x:b.x+6,y:b.y+6,w:b.w-12,h:b.h-12},Math.max(0,val(radiusEl)*3-6));c.stroke();}if(placeholders&&reorderMode&&(reorderFrom===i||reorderHover===i)){c.fillStyle=reorderHover===i?'rgba(232,223,166,.18)':'rgba(255,255,255,.08)';c.fillRect(b.x,b.y,b.w,b.h);c.strokeStyle='#E8DFA6';c.lineWidth=6;c.setLineDash([18,14]);roundPath(c,{x:b.x+8,y:b.y+8,w:b.w-16,h:b.h-16},Math.max(0,val(radiusEl)*3-8));c.stroke();}c.restore();});overlays.forEach((o,i)=>drawOverlayText(c,o,i,placeholders));drawOverlayGuides(c,placeholders);c.restore();}
+function draw(c,width,height,placeholders){const sx=width/W,sy=height/H;c.save();c.setTransform(sx,0,0,sy,0,0);c.fillStyle=bgEl.value;c.fillRect(0,0,W,H);boxes=layoutRects();boxes.forEach((b,i)=>{const s=slots[i];c.save();roundPath(c,b,val(radiusEl)*3);c.clip();if(s.mode==='image'){if(s.img){clampImage(s,b);const d=imageBounds(s,b);c.drawImage(s.img,b.x+(b.w-d.w)/2+s.dx,b.y+(b.h-d.h)/2+s.dy,d.w,d.h);}else if(placeholders){c.fillStyle='#363636';c.fillRect(b.x,b.y,b.w,b.h);c.fillStyle='#999';c.font='28px -apple-system,sans-serif';c.textAlign='center';c.textBaseline='middle';c.fillText('轻点选择图片',b.x+b.w/2,b.y+b.h/2);}}else drawTextSlot(c,s,b,placeholders);if(placeholders&&dragHover===i){c.fillStyle='rgba(255,255,255,.16)';c.fillRect(b.x,b.y,b.w,b.h);c.strokeStyle='rgba(255,255,255,.9)';c.lineWidth=6;c.setLineDash([18,14]);roundPath(c,{x:b.x+9,y:b.y+9,w:b.w-18,h:b.h-18},Math.max(0,val(radiusEl)*3-9));c.stroke();}if(placeholders&&activeAdjust===i){c.strokeStyle='#b7c8e8';c.lineWidth=6;c.setLineDash([]);roundPath(c,{x:b.x+6,y:b.y+6,w:b.w-12,h:b.h-12},Math.max(0,val(radiusEl)*3-6));c.stroke();if(s.mode==='image'&&(imageGuides.x||imageGuides.y)){c.lineWidth=3;c.setLineDash([12,10]);c.beginPath();if(imageGuides.x){c.moveTo(b.x+b.w/2,b.y);c.lineTo(b.x+b.w/2,b.y+b.h);}if(imageGuides.y){c.moveTo(b.x,b.y+b.h/2);c.lineTo(b.x+b.w,b.y+b.h/2);}c.stroke();if(imageGuides.x&&imageGuides.y){c.setLineDash([]);c.fillStyle='#b7c8e8';c.beginPath();c.arc(b.x+b.w/2,b.y+b.h/2,6,0,Math.PI*2);c.fill();}}}if(placeholders&&reorderMode&&(reorderFrom===i||reorderHover===i)){c.fillStyle=reorderHover===i?'rgba(232,223,166,.18)':'rgba(255,255,255,.08)';c.fillRect(b.x,b.y,b.w,b.h);c.strokeStyle='#E8DFA6';c.lineWidth=6;c.setLineDash([18,14]);roundPath(c,{x:b.x+8,y:b.y+8,w:b.w-16,h:b.h-16},Math.max(0,val(radiusEl)*3-8));c.stroke();}c.restore();});overlays.forEach((o,i)=>drawOverlayText(c,o,i,placeholders));drawOverlayGuides(c,placeholders);c.restore();}
 function redraw(){draw(ctx,W,H,true)}
 function setNote(t){document.getElementById('note').textContent=t}
 function syncLayoutUI(){const info=layoutInfo[layoutEl.value];ratioEl.disabled=!info.adjust;document.getElementById('ratioOut').textContent=info.adjust?ratioEl.value+'%':'固定';document.getElementById('layoutNote').textContent=info.note;document.getElementById('marginOut').textContent=marginEl.value;document.getElementById('gapOut').textContent=gapEl.value;document.getElementById('radiusOut').textContent=radiusEl.value;renderGridAdjust();renderSlotCards();redraw();}
@@ -281,7 +281,7 @@ function renderSlotCards(){const n=activeCount();slotsPanel.innerHTML=Array.from
 
 let activeAdjust=-1,activeOverlay=-1;
 function finishAdjustMode(){
-  activeAdjust=-1;activeOverlay=-1;pointers.clear();gesture=null;overlayGuides={x:false,y:false};
+  activeAdjust=-1;activeOverlay=-1;pointers.clear();gesture=null;overlayGuides={x:false,y:false};imageGuides={x:false,y:false};
   canvas.classList.remove('adjusting');adjustBar.classList.add('hidden');
   finishAdjustBtn.textContent='完成调整';redraw();
 }
@@ -300,14 +300,14 @@ function startReorderMode(){
 }
 function startAdjustMode(i){
   if(reorderMode)finishReorderMode();
-  activeOverlay=-1;
+  activeOverlay=-1;imageGuides={x:false,y:false};
   if(i<0||i>=activeCount())return;
   const s=slots[i];
   if(s.mode==='image'&&!s.img){setNote('请先为这个框选择图片。');return;}
   if(s.mode==='text'&&!s.text.trim()){setNote('请先输入文字。');return;}
   activeAdjust=i;
   canvas.classList.add('adjusting');
-  adjustLabel.textContent=`正在调整框 ${i+1} · ${s.mode==='image'?'拖动移动 / 双指、滚轮或触控板缩放':'拖动文字位置'}`;
+  adjustLabel.textContent=`正在调整框 ${i+1} · ${s.mode==='image'?'拖动移动 / 双指、滚轮或触控板缩放 · 接近中心时吸附':'拖动文字位置'}`;
   adjustBar.classList.remove('hidden');
   redraw();
   setTimeout(()=>canvas.scrollIntoView({behavior:'smooth',block:'center'}),0);
@@ -443,8 +443,8 @@ canvas.addEventListener('pointermove',e=>{
     redraw();e.preventDefault();return;
   }
   const ps=[...pointers.values()],s=slots[gesture.i],cx=ps.reduce((a,q)=>a+q.x,0)/ps.length,cy=ps.reduce((a,q)=>a+q.y,0)/ps.length;
-  if(gesture.mode==='image'){s.dx=gesture.dx+(cx-gesture.cx);s.dy=gesture.dy+(cy-gesture.cy);if(ps.length>=2&&gesture.dist>0){const d=Math.hypot(ps[0].x-ps[1].x,ps[0].y-ps[1].y);s.zoom=Math.max(1,Math.min(3.5,gesture.zoom*d/gesture.dist));const z=document.getElementById('zoom'+gesture.i),o=document.getElementById('zoom'+gesture.i+'Out');if(z)z.value=Math.round(s.zoom*100);if(o)o.textContent=Math.round(s.zoom*100)+'%';}clampImage(s,layoutRects()[gesture.i]);}
-  else{s.textDx=gesture.dx+(cx-gesture.cx);s.textDy=gesture.dy+(cy-gesture.cy);}
+  if(gesture.mode==='image'){s.dx=gesture.dx+(cx-gesture.cx);s.dy=gesture.dy+(cy-gesture.cy);if(ps.length>=2&&gesture.dist>0){const d=Math.hypot(ps[0].x-ps[1].x,ps[0].y-ps[1].y);s.zoom=Math.max(1,Math.min(3.5,gesture.zoom*d/gesture.dist));const z=document.getElementById('zoom'+gesture.i),o=document.getElementById('zoom'+gesture.i+'Out');if(z)z.value=Math.round(s.zoom*100);if(o)o.textContent=Math.round(s.zoom*100)+'%';}const b=layoutRects()[gesture.i];clampImage(s,b);const bounds=imageBounds(s,b),snap=18;imageGuides.x=!!bounds&&bounds.maxX>0&&Math.abs(s.dx)<=snap;imageGuides.y=!!bounds&&bounds.maxY>0&&Math.abs(s.dy)<=snap;if(imageGuides.x)s.dx=0;if(imageGuides.y)s.dy=0;}
+  else{imageGuides={x:false,y:false};s.textDx=gesture.dx+(cx-gesture.cx);s.textDy=gesture.dy+(cy-gesture.cy);}
   redraw();e.preventDefault();
 });
 function end(e){
@@ -460,7 +460,7 @@ function end(e){
     redraw();return;
   }
   if(gesture?.kind==='overlay'){pointers.delete(e.pointerId);pointerOrigins.delete(e.pointerId);gesture=null;overlayGuides={x:false,y:false};redraw();return;}
-  pointers.delete(e.pointerId);pointerOrigins.delete(e.pointerId);snapshot();
+  pointers.delete(e.pointerId);pointerOrigins.delete(e.pointerId);const clearImageGuides=!pointers.size;if(clearImageGuides)imageGuides={x:false,y:false};snapshot();if(clearImageGuides)redraw();
 }
 canvas.addEventListener('pointerup',end);canvas.addEventListener('pointercancel',end);canvas.addEventListener('lostpointercapture',end);
 canvas.addEventListener('click',e=>{if(reorderMode||activeOverlay>=0||performance.now()<suppressCanvasClickUntil)return;const i=hit(point(e));if(i<0)return;const s=slots[i];if(s.mode==='image'&&!s.img){const f=document.getElementById('file'+i);if(f)f.click();return;}if((s.mode==='image'&&s.img)||(s.mode==='text'&&s.text.trim()))startAdjustMode(i);});
