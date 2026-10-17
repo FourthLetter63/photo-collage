@@ -1,0 +1,40 @@
+name: Vendor approved fonts
+
+on:
+  push:
+    paths:
+      - .github/workflows/vendor-approved-fonts.yml
+
+permissions:
+  contents: write
+
+jobs:
+  vendor-fonts:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Download fonts from official GitHub releases
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p fonts
+
+          curl -fL --retry 3 --retry-delay 2             -o fonts/Mengshen-HanSerif.ttf             "https://github.com/MaruTama/Mengshen-pinyin-font/releases/download/v20260721-150022/Mengshen-HanSerif.ttf"
+
+          curl -fL --retry 3 --retry-delay 2             -o fonts/CheeseFoamOolongSongLite-Bold.ttf             "https://github.com/InkPantherType/CheeseFoamOolongSong/releases/download/V0.103/CheeseFoamOolongSongLite-Bold.ttf"
+
+          echo "c3588a2087ca17f085f1acb42a6cccd5a48a720351f4766d744100c96160fff3  fonts/Mengshen-HanSerif.ttf" | sha256sum -c -
+          echo "235e73e56af347f249c69385748de88d532df20d188788c1c8b3c6e8a3ae5703  fonts/CheeseFoamOolongSongLite-Bold.ttf" | sha256sum -c -
+
+      - name: Commit vendored fonts
+        shell: bash
+        run: |
+          set -euo pipefail
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add fonts/Mengshen-HanSerif.ttf fonts/CheeseFoamOolongSongLite-Bold.ttf
+          if ! git diff --cached --quiet; then
+            git commit -m "Add approved Mengshen and Cheese Foam fonts"
+            git push
+          fi
