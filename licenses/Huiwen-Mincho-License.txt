@@ -1,4 +1,10 @@
-匯文明朝體 授權聲明
+匯文明朝體 v1.00 授權聲明
+
+Bundled file:
+fonts/匯文明朝體.otf
+
+Version:
+v1.00
 
 來源：
 https://zhuanlan.zhihu.com/p/344103391
