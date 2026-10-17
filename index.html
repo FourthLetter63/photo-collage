@@ -37,7 +37,7 @@ button:disabled,input:disabled,select:disabled{opacity:.45;cursor:not-allowed}.f
 </head>
 <body>
 <h1>3:4 拼贴</h1>
-<p>固定 3:4 · 2–9 框预设布局 · 图片 / 文字混排 · Mac / iPhone / iPad · 照片仅在本机处理</p>
+<p>固定 3:4 · 1–9 框预设布局 · 图片 / 文字混排 · Mac / iPhone / iPad · 照片仅在本机处理</p>
 
 <div class="preview-wrap"><canvas id="preview" class="preview" width="900" height="1200" aria-label="拼贴预览；轻点或单击已有框内容可进入调整模式"></canvas></div><div id="adjustBar" class="adjust-bar hidden"><span id="adjustLabel">正在调整构图</span><button id="finishAdjust" type="button">完成调整</button></div>
 
@@ -56,6 +56,7 @@ button:disabled,input:disabled,select:disabled{opacity:.45;cursor:not-allowed}.f
     <div>
       <div class="row"><label for="layout">预设</label>
         <select id="layout">
+          <option value="1single">1｜单图</option>
           <option value="2v">2｜上下</option>
           <option value="2h">2｜左右</option>
           <option value="3top">3｜上 1 + 下 2</option>
@@ -134,6 +135,7 @@ const W=900,H=1200;let boxes=[],dragHover=-1,reorderMode=false,reorderFrom=-1,re
 const slots=Array.from({length:9},()=>({mode:'image',img:null,url:null,zoom:1,dx:0,dy:0,text:'',fontSize:54,fontWeight:500,textColor:'#E8DFA6',fontChoice:'auto',customFont:'',textDx:0,textDy:0}));
 const overlays=[];
 const layoutInfo={
+  '1single':{n:1,adjust:false,note:'单张图片铺满画布，可在上方叠加文字。'},
   '2v':{n:2,adjust:true,note:'两张上下排列；主区域比例控制上框高度。'},
   '2h':{n:2,adjust:true,note:'两张左右排列；主区域比例控制左框宽度。'},
   '3top':{n:3,adjust:true,note:'一张主图在上，两张并排在下。'},
@@ -229,7 +231,8 @@ function val(el){return Number(el.value)}
 function layoutRects(){
   const m=val(marginEl)*3,g=val(gapEl)*3,innerW=Math.max(2,W-2*m),innerH=Math.max(2,H-2*m),p=val(ratioEl)/100,L=layoutEl.value,b=[];
   const push=(x,y,w,h)=>b.push({x:m+x,y:m+y,w:Math.max(1,w),h:Math.max(1,h)});
-  if(L==='2v'){const h1=(innerH-g)*p;push(0,0,innerW,h1);push(0,h1+g,innerW,innerH-g-h1);}
+  if(L==='1single'){push(0,0,innerW,innerH);}
+  else if(L==='2v'){const h1=(innerH-g)*p;push(0,0,innerW,h1);push(0,h1+g,innerW,innerH-g-h1);}
   else if(L==='2h'){const w1=(innerW-g)*p;push(0,0,w1,innerH);push(w1+g,0,innerW-g-w1,innerH);}
   else if(L==='3top'){const top=(innerH-g)*p,bh=innerH-g-top,bw=(innerW-g)/2;push(0,0,innerW,top);push(0,top+g,bw,bh);push(bw+g,top+g,bw,bh);}
   else if(L==='3bottom'){const bottom=(innerH-g)*p,th=innerH-g-bottom,bw=(innerW-g)/2;push(0,0,bw,th);push(bw+g,0,bw,th);push(0,th+g,innerW,bottom);}
