@@ -108,12 +108,12 @@ button:disabled,input:disabled,select:disabled{opacity:.45;cursor:not-allowed}.f
   <div class="row"><label for="saveMode">保存方式</label>
     <select id="saveMode">
       <option value="download">浏览器下载（默认）</option>
-      <option value="folder">指定文件夹</option>
+      <option value="folder">工作文件夹（每次确认）</option>
     </select>
   </div>
   <div id="folderControls" class="hidden" style="margin-top:10px">
-    <button id="chooseFolder" type="button" style="width:100%">选择 / 更换保存文件夹</button>
-    <div id="folderStatus" class="folder-status">尚未选择文件夹。</div>
+    <button id="chooseFolder" type="button" style="width:100%">选择 / 更换工作文件夹</button>
+    <div id="folderStatus" class="folder-status">尚未选择工作文件夹。</div>
   </div>
   <div id="saveModeNote" class="layout-note">电脑端默认走浏览器下载；是否弹出保存位置由浏览器的下载设置决定。iPhone / iPad 导出时使用系统分享菜单。</div>
 </div>
@@ -484,28 +484,27 @@ const DIR_DB='photo-collage-settings',DIR_STORE='handles',DIR_KEY='export-direct
 function openDirDB(){return new Promise((resolve,reject)=>{const req=indexedDB.open(DIR_DB,1);req.onupgradeneeded=()=>{if(!req.result.objectStoreNames.contains(DIR_STORE))req.result.createObjectStore(DIR_STORE);};req.onsuccess=()=>resolve(req.result);req.onerror=()=>reject(req.error);});}
 async function loadStoredDirectory(){if(!('indexedDB'in window))return null;const db=await openDirDB();return new Promise((resolve,reject)=>{const tx=db.transaction(DIR_STORE,'readonly'),req=tx.objectStore(DIR_STORE).get(DIR_KEY);req.onsuccess=()=>resolve(req.result||null);req.onerror=()=>reject(req.error);tx.oncomplete=()=>db.close();});}
 async function storeDirectory(handle){const db=await openDirDB();return new Promise((resolve,reject)=>{const tx=db.transaction(DIR_STORE,'readwrite');tx.objectStore(DIR_STORE).put(handle,DIR_KEY);tx.oncomplete=()=>{db.close();resolve();};tx.onerror=()=>{db.close();reject(tx.error);};});}
-async function dirPermission(handle,request=false){if(!handle)return'denied';const opts={mode:'readwrite'};if(handle.queryPermission){let p=await handle.queryPermission(opts);if(p==='granted'||!request)return p;if(handle.requestPermission)p=await handle.requestPermission(opts);return p;}return'granted';}
-async function refreshFolderStatus(){if(!directoryHandle){folderStatus.textContent='尚未选择文件夹。';return;}let p='prompt';try{p=await dirPermission(directoryHandle,false);}catch(_){}folderStatus.textContent=`已选择：${directoryHandle.name}${p==='granted'?'（已授权）':p==='prompt'?'（导出时可能需要重新授权）':'（需要重新选择或授权）'}`;}
+async function refreshFolderStatus(){if(!directoryHandle){folderStatus.textContent='尚未选择工作文件夹。';return;}folderStatus.textContent=`工作文件夹：${directoryHandle.name}`;}
 function updateSaveModeUI(){
- const supported='showDirectoryPicker'in window&&'indexedDB'in window;
+ const supported='showDirectoryPicker'in window&&'showSaveFilePicker'in window&&'indexedDB'in window;
  const folderOption=[...saveMode.options].find(o=>o.value==='folder');
  if(folderOption)folderOption.disabled=!supported;
  if(!supported&&saveMode.value==='folder')saveMode.value='download';
  folderControls.classList.toggle('hidden',saveMode.value!=='folder'||!supported);
- if(!supported)saveModeNote.textContent='当前浏览器不支持指定文件夹保存，将使用浏览器下载。iPhone / iPad 导出时使用系统分享菜单。';
- else saveModeNote.textContent='电脑端默认走浏览器下载；如选择“指定文件夹”，授权后会记住该文件夹。是否弹出下载位置由浏览器的下载设置决定。iPhone / iPad 导出时使用系统分享菜单。';
+ if(!supported)saveModeNote.textContent='当前浏览器不支持工作文件夹保存，将使用浏览器下载。iPhone / iPad 导出时使用系统分享菜单。';
+ else saveModeNote.textContent='选择工作文件夹后，每次保存仍会打开保存对话框，并默认从该文件夹开始；不会自动写入文件夹。iPhone / iPad 导出时使用系统分享菜单。';
  try{localStorage.setItem('photoCollageSaveMode',saveMode.value);}catch(_){}
  refreshFolderStatus();
 }
 chooseFolderBtn.addEventListener('click',async()=>{
  try{
-   directoryHandle=await window.showDirectoryPicker({mode:'readwrite'});
-   await storeDirectory(directoryHandle);saveMode.value='folder';updateSaveModeUI();setNote(`已选择保存文件夹：${directoryHandle.name}`);
+   directoryHandle=await window.showDirectoryPicker({mode:'read'});
+   await storeDirectory(directoryHandle);saveMode.value='folder';updateSaveModeUI();setNote(`已选择工作文件夹：${directoryHandle.name}`);
  }catch(e){if(e.name!=='AbortError'){console.warn(e);setNote('无法选择保存文件夹，将继续使用浏览器下载。');}}
 });
 saveMode.addEventListener('change',updateSaveModeUI);
 (async()=>{
- const supported='showDirectoryPicker'in window&&'indexedDB'in window;
+ const supported='showDirectoryPicker'in window&&'showSaveFilePicker'in window&&'indexedDB'in window;
  let saved='download';try{saved=localStorage.getItem('photoCollageSaveMode')||'download';}catch(_){}
  if(supported){try{directoryHandle=await loadStoredDirectory();}catch(e){console.warn(e);}saveMode.value=saved==='folder'?'folder':'download';}
  else saveMode.value='download';
@@ -513,18 +512,28 @@ saveMode.addEventListener('change',updateSaveModeUI);
 })();
 async function exportImage(type){
  const n=activeCount();if(!slots.slice(0,n).every(slotReady)){setNote('当前布局的每个框都需要有图片或文字。');return;}
- let folderReady=false;
- if(saveMode.value==='folder'&&directoryHandle){
-   try{folderReady=(await dirPermission(directoryHandle,true))==='granted';}catch(e){console.warn(e);}
+ const ext=type==='image/png'?'png':'jpg',name=timestampName(ext);
+ let saveHandle=null;
+ if(saveMode.value==='folder'&&'showSaveFilePicker'in window&&!isIOS()){
+   const opts={
+     id:'photo-collage-export',
+     suggestedName:name,
+     excludeAcceptAllOption:true,
+     types:[{description:type==='image/png'?'PNG 图片':'JPG 图片',accept:{[type]:['.'+ext]}}]
+   };
+   if(directoryHandle)opts.startIn=directoryHandle;
+   try{saveHandle=await window.showSaveFilePicker(opts);}
+   catch(e){
+     if(e.name==='AbortError'){setNote('已取消保存。');return;}
+     console.warn(e);setNote('无法打开保存对话框，已改用浏览器下载。');
+   }
  }
  await document.fonts.ready;
- const ext=type==='image/png'?'png':'jpg',name=timestampName(ext),out=document.createElement('canvas');out.width=1800;out.height=2400;draw(out.getContext('2d'),out.width,out.height,false);setNote('正在生成图片…');
+ const out=document.createElement('canvas');out.width=1800;out.height=2400;draw(out.getContext('2d'),out.width,out.height,false);setNote('正在生成图片…');
  const blob=await canvasBlob(out,type,type==='image/jpeg'?0.94:undefined);if(!blob){setNote('导出失败。');return;}
- if(folderReady){
-   try{const fh=await directoryHandle.getFileHandle(name,{create:true}),w=await fh.createWritable();await w.write(blob);await w.close();setNote(`已保存到 ${directoryHandle.name}：${name}`);return;}
-   catch(e){console.warn(e);setNote('指定文件夹保存失败，已改用浏览器下载。');}
- }else if(saveMode.value==='folder'){
-   setNote('指定文件夹当前不可写，已改用浏览器下载；可重新选择文件夹后再试。');
+ if(saveHandle){
+   try{const w=await saveHandle.createWritable();await w.write(blob);await w.close();setNote(`已保存：${saveHandle.name}`);return;}
+   catch(e){console.warn(e);setNote('保存失败，已改用浏览器下载。');}
  }
  const file=new File([blob],name,{type});
  if(isIOS()){
