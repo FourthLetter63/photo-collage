@@ -13,7 +13,7 @@
 - 图片可移动、缩放和重置构图
 - 规则网格支持调整行高和列宽
 - 可调整外边距、框间距、圆角和背景色
-- 文字支持字号、颜色、字重、字体选择和位置调整
+- 文字支持字号、颜色、字重、字体选择和位置调整；除内置字体外，也可输入本机已安装字体名称
 - 支持批量选择图片，并可在预览中拖拽框来交换排列顺序
 - 支持导出 PNG / JPG，文件名自动使用日期和时间
 - 电脑端默认使用浏览器下载；在支持的浏览器中，也可选择并记住一个指定保存文件夹
@@ -61,10 +61,12 @@
 - **Corben** — Regular / Bold
 - **Oleo Script** — Bold
 - **ChillHuoFangKai_F（寒蝉活仿楷）** — 中文默认字体
+- **萌神拼音体（Mengshen HanSerif）**
+- **芝士奶盖乌龙宋（Cheese Foam Oolong Song）** — Lite Bold
 
 以上字体均按 **SIL Open Font License 1.1** 分发。字体文件位于 `fonts/`，对应许可证位于 `licenses/`。
 
-寒蝉活仿楷当前内置的是 Regular；选择 Medium / Semibold / Bold 时，部分浏览器可能使用合成字重。Corben 内置 Regular 与 Bold；Oleo Script 当前仅内置 Bold。
+寒蝉活仿楷当前内置的是 Regular；选择 Medium / Semibold / Bold 时，部分浏览器可能使用合成字重。Corben 内置 Regular 与 Bold；Oleo Script 和芝士奶盖乌龙宋当前仅内置 Bold。字体菜单只列出内置字体；如需使用其他本机字体，可选择“自定义设备字体”并输入字体名称。
 
 ## Structure
 
@@ -76,11 +78,15 @@ photo-collage/
 │   ├── ChillHuoFangKai_F_Regular.otf
 │   ├── Corben-Regular.ttf
 │   ├── Corben-Bold.ttf
-│   └── OleoScript-Bold.ttf
+│   ├── OleoScript-Bold.ttf
+│   ├── Mengshen-HanSerif.ttf
+│   └── CheeseFoamOolongSongLite-Bold.ttf
 ├── licenses/
 │   ├── Cormorant-OFL.txt
 │   ├── ChillMovableType-OFL.txt
 │   ├── Corben-OFL.txt
-│   └── OleoScript-OFL.txt
+│   ├── OleoScript-OFL.txt
+│   ├── Mengshen-Pinyin-OFL.txt
+│   └── CheeseFoamOolongSong-OFL.txt
 └── README.md
 ```
