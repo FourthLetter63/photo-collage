@@ -9,7 +9,7 @@
 - 固定 3:4 画布，导出尺寸为 **1800 × 2400 px**
 - 提供 **2–6 格及 9 格**的多种预设布局
 - 每个框可独立设置为 **图片** 或 **文字**
-- 可在整个拼图上方添加多条 **叠加文字**
+- 可在整个拼图上方添加多条 **叠加文字**，并可设置阴影
 - 图片可移动、缩放和重置构图
 - 规则网格支持调整行高和列宽
 - 可调整外边距、框间距、圆角和背景色
@@ -33,7 +33,7 @@
 3. 在预览中调整构图，并根据需要修改布局、行列比例、间距、圆角、颜色或文字。
 4. 缩放图片时，可使用缩放滑块；进入“调整构图”后，也可使用鼠标滚轮或触控板双指滚动缩放。
 5. 批量导入后如需换顺序，点击“调整顺序”，再把一个框拖到另一个框上交换位置。
-6. 如需在拼图上方加标题、日期等文字，使用“叠加文字”；每条文字可独立调整位置、字号、颜色、字体和字重。
+6. 如需在拼图上方加标题、日期等文字，使用“叠加文字”；每条文字可独立调整位置、字号、颜色、字体、字重和阴影。叠加文字默认使用暖白色 `#F5F2EA`。
 7. 点击“保存 PNG”或“保存 JPG”导出。默认由浏览器下载；支持文件夹授权的浏览器也可选择“指定文件夹”作为默认保存位置。
 
 ### iPhone / iPad
@@ -46,7 +46,7 @@
    - 双指缩放图片
 5. 完成后点“完成调整”。
 6. 如需调整排列顺序，点击“调整顺序”，再把一个框拖到另一个框上交换位置。
-7. 如需在拼图上方加标题、日期等文字，使用“叠加文字”；每条文字可独立调整位置、字号、颜色、字体和字重。
+7. 如需在拼图上方加标题、日期等文字，使用“叠加文字”；每条文字可独立调整位置、字号、颜色、字体、字重和阴影。叠加文字默认使用暖白色 `#F5F2EA`。
 8. 导出 PNG 或 JPG，并通过系统分享菜单保存到“照片”或“文件”。
 
 大尺寸照片首次载入时会先在本机缩小到适合编辑的尺寸，因此可能短暂停顿；之后的编辑会更流畅。
@@ -55,14 +55,16 @@
 
 ## Fonts & Licenses
 
-项目内置：
+项目内置以下已核实许可的开源字体：
 
 - **Cormorant** — 英文默认字体
+- **Corben** — Regular / Bold
+- **Oleo Script** — Bold
 - **ChillHuoFangKai_F（寒蝉活仿楷）** — 中文默认字体
 
-两套字体均按 **SIL Open Font License 1.1** 分发。字体文件位于 `fonts/`，对应许可证位于 `licenses/`。
+以上字体均按 **SIL Open Font License 1.1** 分发。字体文件位于 `fonts/`，对应许可证位于 `licenses/`。
 
-寒蝉活仿楷当前内置的是 Regular；选择 Medium / Semibold / Bold 时，部分浏览器可能使用合成字重。
+寒蝉活仿楷当前内置的是 Regular；选择 Medium / Semibold / Bold 时，部分浏览器可能使用合成字重。Corben 内置 Regular 与 Bold；Oleo Script 当前仅内置 Bold。
 
 ## Structure
 
@@ -71,9 +73,14 @@ photo-collage/
 ├── index.html
 ├── fonts/
 │   ├── Cormorant[wght].ttf
-│   └── ChillHuoFangKai_F_Regular.otf
+│   ├── ChillHuoFangKai_F_Regular.otf
+│   ├── Corben-Regular.ttf
+│   ├── Corben-Bold.ttf
+│   └── OleoScript-Bold.ttf
 ├── licenses/
 │   ├── Cormorant-OFL.txt
-│   └── ChillMovableType-OFL.txt
+│   ├── ChillMovableType-OFL.txt
+│   ├── Corben-OFL.txt
+│   └── OleoScript-OFL.txt
 └── README.md
 ```
