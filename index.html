@@ -17,6 +17,9 @@
 @font-face{font-family:"CollageOleo";src:url("fonts/OleoScript-Bold.ttf") format("truetype");font-style:normal;font-weight:700;font-display:swap}
 @font-face{font-family:"CollageMengshen";src:url("fonts/Mengshen-HanSerif.ttf") format("truetype");font-style:normal;font-weight:400;font-display:swap}
 @font-face{font-family:"CollageCheese";src:url("fonts/CheeseFoamOolongSongLite-Bold.ttf") format("truetype");font-style:normal;font-weight:700;font-display:swap}
+@font-face{font-family:"CollageSacramento";src:url("fonts/Sacramento-Regular.ttf") format("truetype");font-style:normal;font-weight:400;font-display:swap}
+@font-face{font-family:"CollageWindSong";src:url("fonts/WindSong-Regular.ttf") format("truetype");font-style:normal;font-weight:400;font-display:swap}
+@font-face{font-family:"CollageWindSong";src:url("fonts/WindSong-Medium.ttf") format("truetype");font-style:normal;font-weight:500;font-display:swap}
 
 :root{
   color-scheme:light;
@@ -453,7 +456,9 @@ const FONT_STACKS={
   corben:'"CollageCorben",serif',
   oleo:'"CollageOleo",cursive',
   mengshen:'"CollageMengshen",serif',
-  cheese:'"CollageCheese",serif'
+  cheese:'"CollageCheese",serif',
+  sacramento:'"CollageSacramento",cursive',
+  windsong:'"CollageWindSong",cursive'
 };
 function textFont(s){let family=FONT_STACKS[s.fontChoice]||FONT_STACKS.auto;if(s.fontChoice==='custom'&&s.customFont.trim()){const name=s.customFont.trim().replace(/["\\]/g,'');family=`"${name}",${FONT_STACKS.auto}`;}const weight=(s.fontChoice==='oleo'||s.fontChoice==='cheese')?700:(s.fontWeight||500);return `${weight} ${s.fontSize}px ${family}`;}
 function requestTextFont(s){const sample=String(s.text||'字体 Font').trim()||'字体 Font';document.fonts.load(textFont(s),sample).then(redraw).catch(()=>{});}
@@ -489,6 +494,8 @@ const FONT_OPTIONS=[
   ['cormorant','Cormorant'],
   ['corben','Corben'],
   ['oleo','Oleo Script Bold'],
+  ['sacramento','Sacramento'],
+  ['windsong','WindSong'],
   ['mengshen','萌神拼音体'],
   ['cheese','芝士奶盖乌龙宋'],
   ['custom','自定义设备字体…']

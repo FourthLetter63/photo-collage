@@ -40,6 +40,8 @@ Mac 上可从 Finder 直接拖入图片；支持时会使用系统保存对话�
 - Cormorant
 - Corben
 - Oleo Script
+- Sacramento
+- WindSong
 - 寒蝉活仿楷
 - 寒蝉活仿楷・窄体
 - LXGW Bright
